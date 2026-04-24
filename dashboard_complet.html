@@ -1,0 +1,736 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Banque BFY — Dashboard Complet</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --navy:#070f1f; --navy-mid:#0d1f3c; --navy-light:#152947;
+  --blue:#1a56ff; --blue-l:#4d7fff; --cyan:#00d4ff;
+  --green:#00e096; --red:#ff5c5c; --gold:#f5c842; --purple:#a855f7;
+  --white:#e8f0ff; --muted:#6b84b0;
+  --card:rgba(13,31,60,0.92); --border:rgba(26,86,255,0.18);
+  --shadow:0 8px 32px rgba(0,0,0,0.4);
+}
+*{margin:0;padding:0;box-sizing:border-box;}
+body{background:var(--navy);color:var(--white);font-family:'DM Sans',sans-serif;min-height:100vh;display:flex;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background:radial-gradient(ellipse 80% 50% at 20% 0%,rgba(26,86,255,0.08) 0%,transparent 60%),radial-gradient(ellipse 60% 40% at 80% 100%,rgba(0,212,255,0.06) 0%,transparent 60%),linear-gradient(rgba(26,86,255,0.025) 1px,transparent 1px),linear-gradient(90deg,rgba(26,86,255,0.025) 1px,transparent 1px);background-size:auto,auto,44px 44px,44px 44px;pointer-events:none;z-index:0;}
+.sidebar{width:230px;flex-shrink:0;background:rgba(7,15,31,0.98);border-right:1px solid var(--border);display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:200;backdrop-filter:blur(20px);}
+.logo{padding:22px 18px 18px;border-bottom:1px solid var(--border);}
+.logo-icon{width:38px;height:38px;background:linear-gradient(135deg,var(--blue),var(--cyan));border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;margin-bottom:10px;box-shadow:0 0 18px rgba(26,86,255,0.5);}
+.logo h1{font-family:'Syne',sans-serif;font-size:14px;font-weight:800;letter-spacing:.06em;}
+.logo p{font-size:10px;color:var(--muted);letter-spacing:.08em;margin-top:2px;}
+nav{padding:14px 10px;flex:1;overflow-y:auto;}
+.nav-sec{font-size:9px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);padding:0 10px;margin:12px 0 5px;}
+.nb{display:flex;align-items:center;gap:10px;width:100%;padding:9px 10px;border-radius:8px;border:none;background:transparent;color:var(--muted);font-family:'DM Sans',sans-serif;font-size:13px;cursor:pointer;transition:all .18s;text-align:left;margin-bottom:2px;}
+.nb:hover{background:rgba(26,86,255,0.1);color:var(--white);}
+.nb.active{background:linear-gradient(135deg,rgba(26,86,255,0.22),rgba(0,212,255,0.08));color:var(--white);border:1px solid rgba(26,86,255,0.28);}
+.nb .ico{font-size:14px;width:18px;text-align:center;}
+.nc{margin-left:auto;background:var(--blue);color:#fff;font-size:10px;padding:1px 7px;border-radius:20px;font-weight:600;}
+.nc.red{background:var(--red);}
+.sf{padding:12px 10px;border-top:1px solid var(--border);}
+.upill{display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:8px;background:rgba(26,86,255,0.08);}
+.uav{width:30px;height:30px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:11px;font-weight:800;}
+.un{font-size:12px;font-weight:500;} .ur{font-size:10px;color:var(--muted);}
+.main{margin-left:230px;flex:1;padding:28px 30px;position:relative;z-index:1;}
+.section{animation:fadeUp .45s ease both;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+
+.topbar{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:24px;}
+.pt{font-family:'Syne',sans-serif;font-size:24px;font-weight:800;background:linear-gradient(120deg,var(--white) 40%,var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.ps{font-size:12px;color:var(--muted);margin-top:3px;}
+.ta{display:flex;gap:9px;align-items:center;}
+.btn{padding:8px 16px;border-radius:8px;border:none;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;transition:all .18s;display:flex;align-items:center;gap:7px;}
+.bp{background:linear-gradient(135deg,var(--blue),var(--blue-l));color:#fff;box-shadow:0 4px 18px rgba(26,86,255,0.35);}
+.bp:hover{transform:translateY(-2px);box-shadow:0 6px 22px rgba(26,86,255,0.5);}
+.bs{background:var(--card);color:var(--muted);border:1px solid var(--border);}
+.bs:hover{color:var(--white);border-color:rgba(26,86,255,0.4);}
+.btn-full{width:100%;justify-content:center;}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:20px;}
+.sc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:16px 18px;backdrop-filter:blur(16px);position:relative;overflow:hidden;transition:transform .2s,border-color .2s;}
+.sc:hover{transform:translateY(-3px);border-color:rgba(26,86,255,.38);}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--blue),var(--cyan));opacity:0;transition:.2s;}
+.sc:hover::after{opacity:1;}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;}
+.si{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:15px;}
+.ib{background:rgba(26,86,255,.14);} .ic{background:rgba(0,212,255,.1);} .ig{background:rgba(0,224,150,.1);} .io{background:rgba(245,200,66,.1);} .ip{background:rgba(168,85,247,.1);}
+.sv{font-family:'Syne',sans-serif;font-size:26px;font-weight:800;line-height:1;}
+.sl{font-size:11px;color:var(--muted);margin-top:3px;}
+.sp{margin-top:10px;height:3px;background:rgba(255,255,255,.05);border-radius:2px;overflow:hidden;}
+.sf2{height:100%;border-radius:2px;background:linear-gradient(90deg,var(--blue),var(--cyan));transition:width 1s ease;}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;backdrop-filter:blur(16px);overflow:hidden;margin-bottom:18px;}
+.ch{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);}
+.ct{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.cl{font-size:12px;color:var(--blue-l);cursor:pointer;}
+.cl:hover{color:var(--cyan);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.g3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;}
+.g31{display:grid;grid-template-columns:1.5fr 1fr;gap:16px;}
+table{width:100%;border-collapse:collapse;}
+thead th{padding:9px 18px;font-size:9px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);font-weight:500;text-align:left;background:rgba(7,15,31,.5);}
+tbody tr{border-top:1px solid rgba(26,86,255,.07);transition:background .14s;cursor:pointer;}
+tbody tr:hover{background:rgba(26,86,255,.07);}
+tbody td{padding:10px 18px;font-size:13px;}
+.cc{display:flex;align-items:center;gap:9px;}
+.cav{width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:10px;font-weight:800;flex-shrink:0;}
+.cn{font-weight:500;font-size:13px;} .ci{font-size:10px;color:var(--muted);}
+.badge{padding:2px 8px;border-radius:20px;font-size:11px;font-weight:500;display:inline-block;}
+.bact{background:rgba(0,224,150,.1);color:var(--green);}
+.bcou{background:rgba(26,86,255,.14);color:var(--blue-l);}
+.bep{background:rgba(0,212,255,.1);color:var(--cyan);}
+.bau{background:rgba(245,200,66,.1);color:var(--gold);}
+.brec{background:rgba(255,92,92,.1);color:var(--red);}
+.bvir{background:rgba(168,85,247,.1);color:var(--purple);}
+.am{font-family:'Syne',sans-serif;font-weight:600;font-size:13px;}
+.apos{color:var(--green);} .aneg{color:var(--red);} .avir{color:var(--purple);}
+.ab{background:transparent;border:1px solid var(--border);color:var(--muted);border-radius:6px;padding:3px 9px;font-size:11px;cursor:pointer;transition:.15s;font-family:'DM Sans',sans-serif;margin-right:3px;}
+.ab:hover{border-color:rgba(26,86,255,.4);color:var(--white);}
+.ab.del:hover{border-color:rgba(255,92,92,.4);color:var(--red);}
+.ab.view:hover{border-color:rgba(0,212,255,.4);color:var(--cyan);}
+.fb{padding:18px 20px;display:flex;flex-direction:column;gap:11px;}
+.field label{display:block;font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px;}
+.field input,.field select,.field textarea{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:7px;padding:8px 11px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:.18s;-webkit-appearance:none;}
+.field input::placeholder,.field textarea::placeholder{color:var(--muted);}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:rgba(26,86,255,.5);background:rgba(26,86,255,.07);}
+.field select option{background:var(--navy-mid);color:var(--white);}
+.field textarea{resize:vertical;min-height:70px;}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.sb{padding:10px 18px;border-bottom:1px solid var(--border);}
+.si2{width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);border-radius:7px;padding:7px 12px;color:var(--white);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:.18s;}
+.si2::placeholder{color:var(--muted);}
+.si2:focus{border-color:rgba(26,86,255,.5);}
+.es{padding:40px 20px;text-align:center;color:var(--muted);}
+.ei{font-size:32px;margin-bottom:8px;opacity:.5;}
+.et{font-size:13px;}
+.ol{padding:0 18px 10px;}
+.oi{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid rgba(26,86,255,.06);}
+.oi:last-child{border-bottom:none;}
+.oic{width:30px;height:30px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0;}
+.od{background:rgba(0,224,150,.1);} .or2{background:rgba(255,92,92,.1);} .ov{background:rgba(168,85,247,.1);}
+.oinfo{flex:1;}
+.oty{font-size:12px;font-weight:500;}
+.ocl{font-size:10px;color:var(--muted);}
+.oa{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;}
+.mo{position:fixed;inset:0;background:rgba(7,15,31,.85);backdrop-filter:blur(6px);z-index:500;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .25s;}
+.mo.open{opacity:1;pointer-events:all;}
+.md{background:var(--navy-mid);border:1px solid var(--border);border-radius:14px;padding:26px;width:480px;max-width:92vw;transform:scale(.95);transition:transform .25s;box-shadow:var(--shadow);max-height:90vh;overflow-y:auto;}
+.mo.open .md{transform:scale(1);}
+.mt{font-family:'Syne',sans-serif;font-size:17px;font-weight:800;margin-bottom:3px;}
+.ms{font-size:12px;color:var(--muted);margin-bottom:18px;}
+.ma{display:flex;gap:10px;margin-top:18px;justify-content:flex-end;}
+.toast{position:fixed;bottom:26px;right:26px;background:linear-gradient(135deg,var(--navy-mid),rgba(26,86,255,.2));border:1px solid rgba(26,86,255,.3);border-radius:10px;padding:12px 18px;display:flex;align-items:center;gap:10px;font-size:13px;color:var(--white);box-shadow:var(--shadow);z-index:999;transform:translateY(80px);opacity:0;transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+.dot{width:7px;height:7px;background:var(--green);border-radius:50%;box-shadow:0 0 8px var(--green);display:inline-block;animation:pulse 2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.stat-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid rgba(26,86,255,.07);}
+.stat-row:last-child{border-bottom:none;}
+.sr-l{font-size:12px;color:var(--muted);}
+.sr-v{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;}
+.rec-item{padding:12px 18px;border-bottom:1px solid rgba(26,86,255,.07);display:flex;gap:12px;align-items:flex-start;}
+.rec-item:last-child{border-bottom:none;}
+.rec-ico{font-size:20px;flex-shrink:0;margin-top:2px;}
+.rec-body{flex:1;}
+.rec-title{font-size:13px;font-weight:500;}
+.rec-meta{font-size:11px;color:var(--muted);margin-top:2px;}
+.rec-actions{display:flex;gap:6px;margin-top:7px;}
+.av0{background:linear-gradient(135deg,#1a56ff,#00d4ff);}
+.av1{background:linear-gradient(135deg,#7c3aed,#c084fc);}
+.av2{background:linear-gradient(135deg,#f59e0b,#fcd34d);}
+.av3{background:linear-gradient(135deg,#10b981,#6ee7b7);}
+.av4{background:linear-gradient(135deg,#ef4444,#fca5a5);}
+.av5{background:linear-gradient(135deg,#06b6d4,#67e8f9);}
+.av6{background:linear-gradient(135deg,#8b5cf6,#ddd6fe);}
+.av7{background:linear-gradient(135deg,#f97316,#fed7aa);}
+
+.tag-en-cours{background:rgba(245,200,66,.1);color:var(--gold);}
+.tag-resolu{background:rgba(0,224,150,.1);color:var(--green);}
+.tag-nouveau{background:rgba(255,92,92,.1);color:var(--red);}
+</style>
+</head>
+<body>
+<aside class="sidebar">
+  <div class="logo">
+    <div class="logo-icon">🏦</div>
+    <h1>Banque BFY</h1>
+    <p>GESTION BANCAIRE</p>
+  </div>
+  <nav>
+    <div class="nav-sec">Principal</div>
+    <button class="nb active" onclick="nav('dashboard',this)"><span class="ico">▦</span>MENU</button>
+
+    <div class="nav-sec">Gestion</div>
+    <button class="nb" onclick="nav('clients',this)"><span class="ico">👥</span>Clients<span class="nc" id="nc-clients">0</span></button>
+    <button class="nb" onclick="nav('comptes',this)"><span class="ico">💳</span>Comptes<span class="nc" id="nc-comptes">0</span></button>
+
+    <div class="nav-sec">Opérations</div>
+    <button class="nb" onclick="nav('operations',this)"><span class="ico">↕</span>Dépôt / Retrait</button>
+    <button class="nb" onclick="nav('virements',this)"><span class="ico">🔄</span>Virements</button>
+    <button class="nb" onclick="nav('historique',this)"><span class="ico">📋</span>Historique</button>
+
+    <div class="nav-sec">Autres</div>
+    <button class="nb" onclick="nav('stats',this)"><span class="ico">📊</span>Statistiques</button>
+    <button class="nb" onclick="nav('reclamations',this)"><span class="ico">📝</span>Réclamations<span class="nc red" id="nc-rec">0</span></button>
+    <button class="nb" onclick="nav('securite',this)"><span class="ico">🔒</span>Sécurité</button>
+  </nav>
+  <div class="sf">
+    <div class="upill">
+      <div class="uav">AD</div>
+      <div><div class="un">Administrateur</div><div class="ur">Super Admin</div></div>
+    </div>
+  </div>
+</aside>
+<main class="main">
+<div id="s-dashboard" class="section">
+  <div class="topbar">
+    <div><div class="pt">MENU</div><div class="ps"><span class="dot"></span> Système actif</div></div>
+    <div class="ta"><button class="btn bp" onclick="openModal('modal-client')">➕ Nouveau Client</button></div>
+  </div>
+  <div class="stats">
+    <div class="sc"><div class="sh"><div class="si ib">👥</div></div><div class="sv" id="d-clients">0</div><div class="sl">Clients</div><div class="sp"><div class="sf2" id="f-clients" style="width:0%"></div></div></div>
+    <div class="sc"><div class="sh"><div class="si ic">💳</div></div><div class="sv" id="d-comptes">0</div><div class="sl">Comptes</div><div class="sp"><div class="sf2" id="f-comptes" style="width:0%"></div></div></div>
+    <div class="sc"><div class="sh"><div class="si ig">💰</div></div><div class="sv" id="d-solde">0</div><div class="sl">Solde Total (DT)</div><div class="sp"><div class="sf2" id="f-solde" style="width:0%"></div></div></div>
+    <div class="sc"><div class="sh"><div class="si io">🔄</div></div><div class="sv" id="d-ops">0</div><div class="sl">Opérations</div><div class="sp"><div class="sf2" id="f-ops" style="width:0%"></div></div></div>
+    <div class="sc"><div class="sh"><div class="si ip">📝</div></div><div class="sv" id="d-recs">0</div><div class="sl">Réclamations</div><div class="sp"><div class="sf2" id="f-recs" style="width:0%"></div></div></div>
+  </div>
+  <div class="g31">
+    <div class="card"><div class="ch"><span class="ct">Clients Récents</span><span class="cl" onclick="nav('clients',null)">Voir tout →</span></div><div id="dash-clients"></div></div>
+    <div class="card"><div class="ch"><span class="ct">Dernières Opérations</span></div><div class="ol" id="dash-ops"><div class="es"><div class="ei">📋</div><div class="et">Aucune opération</div></div></div></div>
+  </div>
+</div>
+<div id="s-clients" class="section" style="display:none">
+  <div class="topbar">
+    <div><div class="pt">Gestion Clients</div><div class="ps">Ajouter, modifier, supprimer</div></div>
+    <div class="ta"><button class="btn bp" onclick="openModal('modal-client')">➕ Nouveau Client</button></div>
+  </div>
+  <div class="card">
+    <div class="ch"><span class="ct">Liste des Clients</span><span class="cl" id="lbl-clients">0 client(s)</span></div>
+    <div class="sb"><input class="si2" placeholder="🔍 Rechercher par nom, CIN, email..." id="search-clients" oninput="renderClients()"></div>
+    <div id="tbl-clients"></div>
+  </div>
+</div>
+
+<div id="s-comptes" class="section" style="display:none">
+  <div class="topbar">
+    <div><div class="pt">Gestion Comptes</div><div class="ps">Ouvrir et gérer les comptes</div></div>
+    <div class="ta"><button class="btn bp" onclick="openModal('modal-compte')">➕ Ouvrir Compte</button></div>
+  </div>
+  <div class="card">
+    <div class="ch"><span class="ct">Liste des Comptes</span><span class="cl" id="lbl-comptes">0 compte(s)</span></div>
+    <div class="sb"><input class="si2" placeholder="🔍 Rechercher par numéro, client, type..." id="search-comptes" oninput="renderComptes()"></div>
+    <div id="tbl-comptes"></div>
+  </div>
+</div>
+
+<div id="s-operations" class="section" style="display:none">
+  <div class="topbar"><div><div class="pt">Dépôt / Retrait</div><div class="ps">Effectuer des opérations sur les comptes</div></div></div>
+  <div class="g2">
+    <div class="card">
+      <div class="ch"><span class="ct">💚 Effectuer un Dépôt</span></div>
+      <div class="fb">
+        <div class="field"><label>Client</label><select id="op-client-dep" onchange="loadComptesClient('dep')"><option value="">-- Choisir client --</option></select></div>
+        <div class="field"><label>Numéro de Compte</label><select id="op-compte-dep"><option value="">-- Choisir compte --</option></select></div>
+        <div class="field"><label>Montant (DT)</label><input id="op-montant-dep" type="number" min="1" placeholder="0.00"/></div>
+        <button class="btn bp btn-full" onclick="doDepot()">✅ Valider le Dépôt</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch"><span class="ct">❤️ Effectuer un Retrait</span></div>
+      <div class="fb">
+        <div class="field"><label>Client</label><select id="op-client-ret" onchange="loadComptesClient('ret')"><option value="">-- Choisir client --</option></select></div>
+        <div class="field"><label>Numéro de Compte</label><select id="op-compte-ret"><option value="">-- Choisir compte --</option></select></div>
+        <div class="field"><label>Montant (DT)</label><input id="op-montant-ret" type="number" min="1" placeholder="0.00"/></div>
+        <button class="btn bp btn-full" style="background:linear-gradient(135deg,var(--red),#ff8888);" onclick="doRetrait()">✅ Valider le Retrait</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="s-virements" class="section" style="display:none">
+  <div class="topbar"><div><div class="pt">Virements</div><div class="ps">Transférer entre comptes</div></div></div>
+  <div class="card" style="max-width:520px">
+    <div class="ch"><span class="ct">🔄 Effectuer un Virement</span></div>
+    <div class="fb">
+      <div class="field"><label>Client Source</label><select id="vir-client-src" onchange="loadComptesClient('vir-src')"><option value="">-- Choisir client --</option></select></div>
+      <div class="field"><label>Compte Source</label><select id="vir-compte-src"><option value="">-- Choisir compte --</option></select></div>
+      <div class="field"><label>Client Destinataire</label><select id="vir-client-dst" onchange="loadComptesClient('vir-dst')"><option value="">-- Choisir client --</option></select></div>
+      <div class="field"><label>Compte Destinataire</label><select id="vir-compte-dst"><option value="">-- Choisir compte --</option></select></div>
+      <div class="field"><label>Montant (DT)</label><input id="vir-montant" type="number" min="1" placeholder="0.00"/></div>
+      <button class="btn bp btn-full" onclick="doVirement()">✅ Valider le Virement</button>
+    </div>
+  </div>
+</div>
+
+<div id="s-historique" class="section" style="display:none">
+  <div class="topbar"><div><div class="pt">Historique</div><div class="ps">Toutes les opérations</div></div></div>
+  <div class="card">
+    <div class="ch"><span class="ct">Toutes les Opérations</span><span class="cl" id="lbl-ops">0 opération(s)</span></div>
+    <div class="sb"><input class="si2" placeholder="🔍 Rechercher..." id="search-ops" oninput="renderHistorique()"></div>
+    <div id="tbl-historique"></div>
+  </div>
+</div>
+<div id="s-stats" class="section" style="display:none">
+  <div class="topbar"><div><div class="pt">Statistiques</div><div class="ps">Analyse financière du système</div></div></div>
+  <div class="g3">
+    <div class="card"><div class="ch"><span class="ct">📈 Clients</span></div><div class="fb" id="stat-clients-box"></div></div>
+    <div class="card"><div class="ch"><span class="ct">💳 Comptes</span></div><div class="fb" id="stat-comptes-box"></div></div>
+    <div class="card"><div class="ch"><span class="ct">💰 Financier</span></div><div class="fb" id="stat-finance-box"></div></div>
+  </div>
+  <div class="card"><div class="ch"><span class="ct">🏆 Top Clients par Solde</span></div><div id="tbl-top-clients"></div></div>
+</div>
+
+<div id="s-reclamations" class="section" style="display:none">
+  <div class="topbar">
+    <div><div class="pt">Réclamations</div><div class="ps">Gérer les réclamations clients</div></div>
+    <div class="ta"><button class="btn bp" onclick="openModal('modal-rec')">➕ Nouvelle Réclamation</button></div>
+  </div>
+  <div class="card">
+    <div class="ch"><span class="ct">Liste des Réclamations</span><span class="cl" id="lbl-recs">0 réclamation(s)</span></div>
+    <div id="list-recs"></div>
+  </div>
+</div>
+<div id="s-securite" class="section" style="display:none">
+  <div class="topbar"><div><div class="pt">Sécurité</div><div class="ps">Paramètres de sécurité</div></div></div>
+  <div class="card" style="max-width:440px">
+    <div class="ch"><span class="ct">🔒 Changer le Mot de Passe</span></div>
+    <div class="fb">
+      <div class="field"><label>Ancien mot de passe</label><input type="password" placeholder="••••••••"/></div>
+      <div class="field"><label>Nouveau mot de passe</label><input type="password" placeholder="••••••••"/></div>
+      <div class="field"><label>Confirmer</label><input type="password" placeholder="••••••••"/></div>
+      <button class="btn bp" onclick="showToast('✅','Mot de passe modifié !')">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+</main>
+<div class="mo" id="modal-client" onclick="closeModalOut(event,'modal-client')">
+  <div class="md">
+    <div class="mt">➕ Nouveau Client</div>
+    <div class="ms">Remplir les informations du client</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="fr">
+        <div class="field"><label>Nom</label><input id="mc-nom" placeholder="Ben Ali"/></div>
+        <div class="field"><label>Prénom</label><input id="mc-prenom" placeholder="Mohamed"/></div>
+      </div>
+      <div class="field"><label>CIN</label><input id="mc-cin" placeholder="12345678"/></div>
+      <div class="fr">
+        <div class="field"><label>Téléphone</label><input id="mc-tel" placeholder="+216 XX XXX XXX"/></div>
+        <div class="field"><label>Email</label><input id="mc-email" placeholder="email@exemple.com"/></div>
+      </div>
+      <div class="field"><label>Adresse</label><input id="mc-adresse" placeholder="Tunis, Tunisie"/></div>
+    </div>
+    <div class="ma">
+      <button class="btn bs" onclick="closeModal('modal-client')">Annuler</button>
+      <button class="btn bp" onclick="addClient()">✅ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<div class="mo" id="modal-compte" onclick="closeModalOut(event,'modal-compte')">
+  <div class="md">
+    <div class="mt">💳 Ouvrir un Compte</div>
+    <div class="ms">Associer un compte à un client</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="field"><label>Client</label><select id="mco-client"><option value=""> Choisir client </option></select></div>
+      <div class="fr">
+        <div class="field"><label>Numéro de Compte</label><input id="mco-num" placeholder="ex: 123"/></div>
+        <div class="field"><label>Type</label><select id="mco-type"><option value="courant">Courant</option><option value="epargne">Épargne</option><option value="autre">Autre</option></select></div>
+      </div>
+      <div class="field"><label>Solde Initial (DT)</label><input id="mco-solde" type="number" min="0" placeholder="0"/></div>
+    </div>
+    <div class="ma">
+      <button class="btn bs" onclick="closeModal('modal-compte')">Annuler</button>
+      <button class="btn bp" onclick="addCompte()">✅ Ouvrir</button>
+    </div>
+  </div>
+</div>
+<div class="mo" id="modal-rec" onclick="closeModalOut(event,'modal-rec')">
+  <div class="md">
+    <div class="mt">📝 Nouvelle Réclamation</div>
+    <div class="ms">Enregistrer une réclamation client</div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <div class="field"><label>Client</label><select id="mr-client"><option value="">-- Choisir client --</option></select></div>
+      <div class="field"><label>Objet</label><input id="mr-objet" placeholder="Ex: Erreur de virement"/></div>
+      <div class="field"><label>Description</label><textarea id="mr-desc" placeholder="Décrivez le problème..."></textarea></div>
+    </div>
+    <div class="ma">
+      <button class="btn bs" onclick="closeModal('modal-rec')">Annuler</button>
+      <button class="btn bp" onclick="addReclamation()">✅ Enregistrer</button>
+    </div>
+  </div>
+</div>
+<div class="mo" id="modal-detail" onclick="closeModalOut(event,'modal-detail')">
+  <div class="md">
+    <div class="mt" id="md-title">Détail Compte</div>
+    <div class="ms" id="md-sub"></div>
+    <div id="md-body"></div>
+    <div class="ma"><button class="btn bs" onclick="closeModal('modal-detail')">Fermer</button></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"><span id="t-ico">✅</span><span id="t-msg">OK</span></div>
+
+<script>
+let clients=[], comptes=[], operations=[], reclamations=[];
+let nextClientId=1, nextCompteId=1, nextOpId=1, nextRecId=1;
+const AVC=['av0','av1','av2','av3','av4','av5','av6','av7'];
+const initials=(n,p)=>((n[0]||'')+(p[0]||'')).toUpperCase();
+const avc=i=>AVC[i%AVC.length];
+const fmt=n=>Number(n).toLocaleString('fr-FR');
+const today=()=>new Date().toLocaleDateString('fr-FR');
+
+function nav(sec, btn){
+  document.querySelectorAll('.section').forEach(s=>s.style.display='none');
+  document.getElementById('s-'+sec).style.display='block';
+  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+  else {
+    document.querySelectorAll('.nb').forEach(b=>{
+      if(b.textContent.toLowerCase().includes(sec.substring(0,4))) b.classList.add('active');
+    });
+  }
+  const renders={clients:renderClients,comptes:renderComptes,historique:renderHistorique,stats:renderStats,reclamations:renderReclamations,dashboard:renderDashboard};
+  if(renders[sec]) renders[sec]();
+  if(sec==='operations'||sec==='virements') populateClientSelects();
+}
+
+function addClient(){
+  const g=id=>document.getElementById(id).value.trim();
+  const nom=g('mc-nom'),prenom=g('mc-prenom');
+  if(!nom||!prenom){showToast('⚠️','Nom et prénom obligatoires !');return;}
+  const c={id:nextClientId++,nom,prenom,cin:g('mc-cin'),tel:g('mc-tel'),email:g('mc-email'),adresse:g('mc-adresse'),date:today()};
+  clients.push(c);
+  ['mc-nom','mc-prenom','mc-cin','mc-tel','mc-email','mc-adresse'].forEach(id=>document.getElementById(id).value='');
+  closeModal('modal-client');
+  updateAll();
+  showToast('✅',`Client ${prenom} ${nom} ajouté !`);
+}
+
+function deleteClient(id){
+  if(!confirm('Supprimer ce client et tous ses comptes ?')) return;
+  clients=clients.filter(c=>c.id!==id);
+  comptes=comptes.filter(c=>c.clientId!==id);
+  updateAll(); renderClients();
+  showToast('🗑️','Client supprimé.');
+}
+
+function renderClients(){
+  const q=(document.getElementById('search-clients')||{}).value||'';
+  const f=clients.filter(c=>(c.nom+' '+c.prenom+c.cin+c.email).toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('lbl-clients').textContent=f.length+' client(s)';
+  const el=document.getElementById('tbl-clients');
+  if(!f.length){el.innerHTML=`<div class="es"><div class="ei">👥</div><div class="et">${q?'Aucun résultat':'Aucun client enregistré'}</div></div>`;return;}
+  el.innerHTML=`<table><thead><tr><th>Client</th><th>CIN</th><th>Téléphone</th><th>Email</th><th>Comptes</th><th>Actions</th></tr></thead><tbody>`+
+  f.map(c=>`<tr>
+    <td><div class="cc"><div class="cav ${avc(c.id)}">${initials(c.nom,c.prenom)}</div><div><div class="cn">${c.prenom} ${c.nom}</div><div class="ci">#C${String(c.id).padStart(3,'0')}</div></div></div></td>
+    <td style="color:var(--muted);font-size:12px">${c.cin||'—'}</td>
+    <td style="color:var(--muted);font-size:12px">${c.tel||'—'}</td>
+    <td style="color:var(--muted);font-size:12px">${c.email||'—'}</td>
+    <td><span class="badge bcou">${comptes.filter(x=>x.clientId===c.id).length} compte(s)</span></td>
+    <td><button class="ab del" onclick="deleteClient(${c.id})">🗑 Suppr.</button></td>
+  </tr>`).join('')+`</tbody></table>`;
+}
+
+function addCompte(){
+  const clientId=parseInt(document.getElementById('mco-client').value);
+  const num=document.getElementById('mco-num').value.trim();
+  const type=document.getElementById('mco-type').value;
+  const solde=parseFloat(document.getElementById('mco-solde').value)||0;
+  if(!clientId){showToast('⚠️','Choisir un client !');return;}
+  if(!num){showToast('⚠️','Numéro de compte obligatoire !');return;}
+  if(comptes.find(c=>c.num===num)){showToast('⚠️','Numéro déjà utilisé !');return;}
+  const client=clients.find(c=>c.id===clientId);
+  comptes.push({id:nextCompteId++,num,clientId,clientNom:client.prenom+' '+client.nom,type,solde,date:today(),ops:[]});
+  if(solde>0) addOp('depot',num,clientId,client.prenom+' '+client.nom,solde,'Dépôt initial');
+  ['mco-num','mco-solde'].forEach(id=>document.getElementById(id).value='');
+  closeModal('modal-compte');
+  updateAll(); renderComptes();
+  showToast('✅',`Compte ${num} ouvert !`);
+}
+
+function deleteCompte(id){
+  if(!confirm('Supprimer ce compte ?')) return;
+  comptes=comptes.filter(c=>c.id!==id);
+  updateAll(); renderComptes();
+  showToast('🗑️','Compte supprimé.');
+}
+
+function viewCompte(id){
+  const c=comptes.find(x=>x.id===id);
+  if(!c) return;
+  const ops=operations.filter(o=>o.compteNum===c.num);
+  document.getElementById('md-title').textContent='💳 Compte #'+c.num;
+  document.getElementById('md-sub').textContent=c.clientNom+' — '+c.type;
+  document.getElementById('md-body').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:0">
+      <div class="stat-row"><span class="sr-l">Solde actuel</span><span class="sr-v apos">${fmt(c.solde)} DT</span></div>
+      <div class="stat-row"><span class="sr-l">Type</span><span class="badge b${c.type}">${c.type}</span></div>
+      <div class="stat-row"><span class="sr-l">Date ouverture</span><span class="sr-v">${c.date}</span></div>
+      <div class="stat-row"><span class="sr-l">Nb opérations</span><span class="sr-v">${ops.length}</span></div>
+    </div>
+    <div style="margin-top:14px;font-family:'Syne',sans-serif;font-size:12px;font-weight:700;letter-spacing:.06em;color:var(--muted);margin-bottom:8px">HISTORIQUE</div>
+    ${ops.length?`<div style="max-height:200px;overflow-y:auto">`+ops.slice().reverse().map(o=>`
+      <div class="oi">
+        <div class="oic ${o.type==='depot'?'od':o.type==='retrait'?'or2':'ov'}">${o.type==='depot'?'⬆️':o.type==='retrait'?'⬇️':'🔄'}</div>
+        <div class="oinfo"><div class="oty">${o.type.charAt(0).toUpperCase()+o.type.slice(1)}</div><div class="ocl">${o.date}</div></div>
+        <div class="oa ${o.type==='depot'?'apos':o.type==='retrait'?'aneg':'avir'}">${o.type==='depot'?'+':'-'}${fmt(o.montant)} DT</div>
+      </div>`).join('')+`</div>`
+    :`<div class="es" style="padding:20px"><div class="et">Aucune opération sur ce compte</div></div>`}`;
+  openModal('modal-detail');
+}
+
+function renderComptes(){
+  const q=(document.getElementById('search-comptes')||{}).value||'';
+  const f=comptes.filter(c=>(c.num+c.clientNom+c.type).toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('lbl-comptes').textContent=f.length+' compte(s)';
+  const el=document.getElementById('tbl-comptes');
+  if(!f.length){el.innerHTML=`<div class="es"><div class="ei">💳</div><div class="et">${q?'Aucun résultat':'Aucun compte ouvert'}</div></div>`;return;}
+  el.innerHTML=`<table><thead><tr><th>N° Compte</th><th>Client</th><th>Type</th><th>Solde</th><th>Ouvert le</th><th>Actions</th></tr></thead><tbody>`+
+  f.map(c=>`<tr>
+    <td><span style="font-family:'Syne',sans-serif;font-weight:700">${c.num}</span></td>
+    <td><div class="cc"><div class="cav ${avc(c.clientId)}" style="width:24px;height:24px;font-size:9px">${initials(...c.clientNom.split(' '))}</div>${c.clientNom}</div></td>
+    <td><span class="badge b${c.type}">${c.type}</span></td>
+    <td><span class="am apos">${fmt(c.solde)} DT</span></td>
+    <td style="color:var(--muted);font-size:12px">${c.date}</td>
+    <td>
+      <button class="ab view" onclick="viewCompte(${c.id})">👁 Détail</button>
+      <button class="ab del" onclick="deleteCompte(${c.id})">🗑 Suppr.</button>
+    </td>
+  </tr>`).join('')+`</tbody></table>`;
+}
+
+function addOp(type,compteNum,clientId,clientNom,montant,note=''){
+  operations.push({id:nextOpId++,type,compteNum,clientId,clientNom,montant,note,date:today()});
+}
+
+function loadComptesClient(prefix){
+  const selMap={
+    'dep':['op-client-dep','op-compte-dep'],
+    'ret':['op-client-ret','op-compte-ret'],
+    'vir-src':['vir-client-src','vir-compte-src'],
+    'vir-dst':['vir-client-dst','vir-compte-dst']
+  };
+  const [clientSel,compteSel]=selMap[prefix];
+  const clientId=parseInt(document.getElementById(clientSel).value);
+  const sel=document.getElementById(compteSel);
+  sel.innerHTML='<option value="">-- Choisir compte --</option>';
+  comptes.filter(c=>c.clientId===clientId).forEach(c=>{
+    sel.innerHTML+=`<option value="${c.id}">${c.num} (${c.type}) — ${fmt(c.solde)} DT</option>`;
+  });
+}
+
+function doDepot(){
+  const cid=parseInt(document.getElementById('op-compte-dep').value);
+  const m=parseFloat(document.getElementById('op-montant-dep').value);
+  if(!cid||!m||m<=0){showToast('⚠️','Remplir tous les champs !');return;}
+  const c=comptes.find(x=>x.id===cid);
+  c.solde+=m;
+  addOp('depot',c.num,c.clientId,c.clientNom,m);
+  document.getElementById('op-montant-dep').value='';
+  updateAll(); showToast('✅',`Dépôt de ${fmt(m)} DT effectué sur compte ${c.num}`);
+}
+
+function doRetrait(){
+  const cid=parseInt(document.getElementById('op-compte-ret').value);
+  const m=parseFloat(document.getElementById('op-montant-ret').value);
+  if(!cid||!m||m<=0){showToast('⚠️','Remplir tous les champs !');return;}
+  const c=comptes.find(x=>x.id===cid);
+  if(c.solde<m){showToast('❌','Solde insuffisant !');return;}
+  c.solde-=m;
+  addOp('retrait',c.num,c.clientId,c.clientNom,m);
+  document.getElementById('op-montant-ret').value='';
+  updateAll(); showToast('✅',`Retrait de ${fmt(m)} DT effectué sur compte ${c.num}`);
+}
+
+function doVirement(){
+  const csrc=parseInt(document.getElementById('vir-compte-src').value);
+  const cdst=parseInt(document.getElementById('vir-compte-dst').value);
+  const m=parseFloat(document.getElementById('vir-montant').value);
+  if(!csrc||!cdst||!m||m<=0){showToast('⚠️','Remplir tous les champs !');return;}
+  if(csrc===cdst){showToast('⚠️','Comptes identiques !');return;}
+  const src=comptes.find(x=>x.id===csrc), dst=comptes.find(x=>x.id===cdst);
+  if(src.solde<m){showToast('❌','Solde insuffisant !');return;}
+  src.solde-=m; dst.solde+=m;
+  addOp('virement',src.num,src.clientId,src.clientNom,m,`→ ${dst.num}`);
+  addOp('depot',dst.num,dst.clientId,dst.clientNom,m,`← ${src.num}`);
+  document.getElementById('vir-montant').value='';
+  updateAll(); showToast('✅',`Virement de ${fmt(m)} DT : ${src.num} → ${dst.num}`);
+}
+
+function renderHistorique(){
+  const q=(document.getElementById('search-ops')||{}).value||'';
+  const f=operations.filter(o=>(o.type+o.compteNum+o.clientNom).toLowerCase().includes(q.toLowerCase()));
+  document.getElementById('lbl-ops').textContent=f.length+' opération(s)';
+  const el=document.getElementById('tbl-historique');
+  if(!f.length){el.innerHTML=`<div class="es"><div class="ei">📋</div><div class="et">${q?'Aucun résultat':'Aucune opération'}</div></div>`;return;}
+  el.innerHTML=`<table><thead><tr><th>#</th><th>Type</th><th>Compte</th><th>Client</th><th>Montant</th><th>Date</th></tr></thead><tbody>`+
+  [...f].reverse().map((o,i)=>`<tr>
+    <td style="color:var(--muted);font-size:11px">${f.length-i}</td>
+    <td><span class="badge ${o.type==='depot'?'bact':o.type==='retrait'?'brec':'bvir'}">${o.type}</span></td>
+    <td style="font-family:'Syne',sans-serif;font-weight:700">${o.compteNum}</td>
+    <td>${o.clientNom}</td>
+    <td><span class="am ${o.type==='depot'?'apos':o.type==='retrait'?'aneg':'avir'}">${o.type==='depot'?'+':'-'}${fmt(o.montant)} DT</span></td>
+    <td style="color:var(--muted);font-size:12px">${o.date}</td>
+  </tr>`).join('')+`</tbody></table>`;
+}
+function renderStats(){
+  const totalSolde=comptes.reduce((s,c)=>s+c.solde,0);
+  const soldes=comptes.map(c=>c.solde);
+  const maxS=soldes.length?Math.max(...soldes):0;
+  const minS=soldes.length?Math.min(...soldes):0;
+  const moyS=soldes.length?totalSolde/soldes.length:0;
+  const depots=operations.filter(o=>o.type==='depot').reduce((s,o)=>s+o.montant,0);
+  const retraits=operations.filter(o=>o.type==='retrait').reduce((s,o)=>s+o.montant,0);
+
+  document.getElementById('stat-clients-box').innerHTML=`
+    <div class="stat-row"><span class="sr-l">Total clients</span><span class="sr-v">${clients.length}</span></div>
+    <div class="stat-row"><span class="sr-l">Clients avec comptes</span><span class="sr-v">${[...new Set(comptes.map(c=>c.clientId))].length}</span></div>
+    <div class="stat-row"><span class="sr-l">Clients sans compte</span><span class="sr-v" style="color:var(--red)">${clients.length-[...new Set(comptes.map(c=>c.clientId))].length}</span></div>`;
+
+  document.getElementById('stat-comptes-box').innerHTML=`
+    <div class="stat-row"><span class="sr-l">Total comptes</span><span class="sr-v">${comptes.length}</span></div>
+    <div class="stat-row"><span class="sr-l">Comptes courants</span><span class="sr-v">${comptes.filter(c=>c.type==='courant').length}</span></div>
+    <div class="stat-row"><span class="sr-l">Comptes épargne</span><span class="sr-v">${comptes.filter(c=>c.type==='epargne').length}</span></div>`;
+
+  document.getElementById('stat-finance-box').innerHTML=`
+    <div class="stat-row"><span class="sr-l">Solde total</span><span class="sr-v apos">${fmt(totalSolde)} DT</span></div>
+    <div class="stat-row"><span class="sr-l">Solde moyen</span><span class="sr-v">${fmt(Math.round(moyS))} DT</span></div>
+    <div class="stat-row"><span class="sr-l">Solde max</span><span class="sr-v apos">${fmt(maxS)} DT</span></div>
+    <div class="stat-row"><span class="sr-l">Solde min</span><span class="sr-v aneg">${fmt(minS)} DT</span></div>
+    <div class="stat-row"><span class="sr-l">Total dépôts</span><span class="sr-v apos">+${fmt(depots)} DT</span></div>
+    <div class="stat-row"><span class="sr-l">Total retraits</span><span class="sr-v aneg">-${fmt(retraits)} DT</span></div>`;
+
+  const top=[...comptes].sort((a,b)=>b.solde-a.solde).slice(0,5);
+  document.getElementById('tbl-top-clients').innerHTML=top.length?
+    `<table><thead><tr><th>Rang</th><th>Client</th><th>Compte</th><th>Solde</th></tr></thead><tbody>`+
+    top.map((c,i)=>`<tr>
+      <td><span style="font-family:'Syne',sans-serif;font-weight:800;color:${i===0?'var(--gold)':i===1?'var(--muted)':'var(--white)'}">#${i+1}</span></td>
+      <td>${c.clientNom}</td>
+      <td style="font-family:'Syne',sans-serif;font-weight:700">${c.num}</td>
+      <td><span class="am apos">${fmt(c.solde)} DT</span></td>
+    </tr>`).join('')+`</tbody></table>`
+    :`<div class="es"><div class="et">Aucun compte</div></div>`;
+}
+
+function addReclamation(){
+  const clientId=parseInt(document.getElementById('mr-client').value);
+  const objet=document.getElementById('mr-objet').value.trim();
+  const desc=document.getElementById('mr-desc').value.trim();
+  if(!clientId||!objet){showToast('⚠️','Client et objet obligatoires !');return;}
+  const client=clients.find(c=>c.id===clientId);
+  reclamations.push({id:nextRecId++,clientId,clientNom:client.prenom+' '+client.nom,objet,desc,statut:'nouveau',date:today()});
+  ['mr-objet','mr-desc'].forEach(id=>document.getElementById(id).value='');
+  closeModal('modal-rec');
+  updateAll(); renderReclamations();
+  showToast('✅','Réclamation enregistrée !');
+}
+
+function updateRecStatut(id,statut){
+  const r=reclamations.find(x=>x.id===id);
+  if(r){r.statut=statut;updateAll();renderReclamations();showToast('✅','Statut mis à jour !');}
+}
+
+function deleteRec(id){
+  reclamations=reclamations.filter(r=>r.id!==id);
+  updateAll(); renderReclamations();
+  showToast('🗑️','Réclamation supprimée.');
+}
+
+function renderReclamations(){
+  document.getElementById('lbl-recs').textContent=reclamations.length+' réclamation(s)';
+  const el=document.getElementById('list-recs');
+  if(!reclamations.length){el.innerHTML=`<div class="es"><div class="ei">📝</div><div class="et">Aucune réclamation</div></div>`;return;}
+  el.innerHTML=[...reclamations].reverse().map(r=>`
+    <div class="rec-item">
+      <div class="rec-ico">${r.statut==='resolu'?'✅':r.statut==='en-cours'?'🔄':'🔴'}</div>
+      <div class="rec-body">
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="rec-title">${r.objet}</div>
+          <span class="badge tag-${r.statut}">${r.statut}</span>
+        </div>
+        <div class="rec-meta">👤 ${r.clientNom} — 📅 ${r.date}</div>
+        ${r.desc?`<div style="font-size:12px;color:var(--muted);margin-top:4px">${r.desc}</div>`:''}
+        <div class="rec-actions">
+          ${r.statut!=='en-cours'?`<button class="ab" onclick="updateRecStatut(${r.id},'en-cours')">En cours</button>`:''}
+          ${r.statut!=='resolu'?`<button class="ab" style="color:var(--green)" onclick="updateRecStatut(${r.id},'resolu')">✅ Résolu</button>`:''}
+          <button class="ab del" onclick="deleteRec(${r.id})">🗑</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+function renderDashboard(){
+  const el=document.getElementById('dash-clients');
+  if(!clients.length){el.innerHTML=`<div class="es"><div class="ei">👥</div><div class="et">Aucun client — cliquez "Nouveau Client"</div></div>`;
+  } else {
+    el.innerHTML=`<table><thead><tr><th>Client</th><th>Comptes</th><th>Solde Total</th></tr></thead><tbody>`+
+    clients.slice(-5).reverse().map(c=>{
+      const cpts=comptes.filter(x=>x.clientId===c.id);
+      const total=cpts.reduce((s,x)=>s+x.solde,0);
+      return `<tr>
+        <td><div class="cc"><div class="cav ${avc(c.id)}">${initials(c.nom,c.prenom)}</div>
+        <div><div class="cn">${c.prenom} ${c.nom}</div><div class="ci">#C${String(c.id).padStart(3,'0')}</div></div></div></td>
+        <td><span class="badge bcou">${cpts.length}</span></td>
+        <td><span class="am apos">${fmt(total)} DT</span></td>
+      </tr>`;}).join('')+`</tbody></table>`;
+  }
+  const oel=document.getElementById('dash-ops');
+  if(!operations.length){oel.innerHTML=`<div class="es"><div class="ei">📋</div><div class="et">Aucune opération</div></div>`;
+  } else {
+    oel.innerHTML=[...operations].slice(-6).reverse().map(o=>`
+      <div class="oi">
+        <div class="oic ${o.type==='depot'?'od':o.type==='retrait'?'or2':'ov'}">${o.type==='depot'?'⬆️':o.type==='retrait'?'⬇️':'🔄'}</div>
+        <div class="oinfo"><div class="oty">${o.type.charAt(0).toUpperCase()+o.type.slice(1)}</div><div class="ocl">${o.clientNom} · ${o.compteNum}</div></div>
+        <div class="oa ${o.type==='depot'?'apos':o.type==='retrait'?'aneg':'avir'}">${o.type==='depot'?'+':'-'}${fmt(o.montant)} DT</div>
+      </div>`).join('');
+  }
+}
+function updateAll(){
+  const totalSolde=comptes.reduce((s,c)=>s+c.solde,0);
+  const n=clients.length, co=comptes.length, op=operations.length, re=reclamations.length;
+  document.getElementById('d-clients').textContent=n;
+  document.getElementById('d-comptes').textContent=co;
+  document.getElementById('d-solde').textContent=fmt(totalSolde);
+  document.getElementById('d-ops').textContent=op;
+  document.getElementById('d-recs').textContent=re;
+  document.getElementById('f-clients').style.width=Math.min(n*10,100)+'%';
+  document.getElementById('f-comptes').style.width=Math.min(co*10,100)+'%';
+  document.getElementById('f-solde').style.width=Math.min(totalSolde/1000,100)+'%';
+  document.getElementById('f-ops').style.width=Math.min(op*5,100)+'%';
+  document.getElementById('f-recs').style.width=Math.min(re*10,100)+'%';
+  document.getElementById('nc-clients').textContent=n;
+  document.getElementById('nc-comptes').textContent=co;
+  document.getElementById('nc-rec').textContent=reclamations.filter(r=>r.statut==='nouveau').length;
+  renderDashboard();
+}
+function populateClientSelects(){
+  const opts=clients.map(c=>`<option value="${c.id}">${c.prenom} ${c.nom}</option>`).join('');
+  const empty='<option value="">-- Choisir client --</option>';
+  ['op-client-dep','op-client-ret','vir-client-src','vir-client-dst','mco-client','mr-client'].forEach(id=>{
+    const el=document.getElementById(id);
+    if(el){el.innerHTML=empty+opts; }
+  });
+}
+
+function openModal(id){
+  populateClientSelects();
+  document.getElementById(id).classList.add('open');
+}
+function closeModal(id){document.getElementById(id).classList.remove('open');}
+function closeModalOut(e,id){if(e.target.id===id)closeModal(id);}
+
+let tt;
+function showToast(ico,msg){
+  document.getElementById('t-ico').textContent=ico;
+  document.getElementById('t-msg').textContent=msg;
+  const t=document.getElementById('toast');
+  t.classList.add('show');
+  clearTimeout(tt);
+  tt=setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+updateAll();
+</script>
+</body>
+</html>
